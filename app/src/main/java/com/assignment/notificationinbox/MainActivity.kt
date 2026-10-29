@@ -20,13 +20,17 @@ import com.assignment.notificationinbox.ui.InboxScreen
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
-
-    // If denied, system banners are skipped but the inbox keeps working.
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { t ->
+                if (t.isSuccessful) android.util.Log.d("InboxMessaging", "FCM token: ${t.result}")
+               else android.util.Log.e("InboxMessaging", "Token fetch failed", t.exception)
+            }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -40,11 +44,7 @@ class MainActivity : ComponentActivity() {
         saveBackgroundPayload(intent)
     }
 
-    /**
-     * When an FCM "notification" message arrives while the app is backgrounded, the system tray shows
-     * it and the data payload is delivered as intent extras. Store it so it still lands in the inbox
-     * (duplicates are ignored by the DB).
-     */
+
     private fun saveBackgroundPayload(intent: Intent?) {
         val extras = intent?.extras ?: return
         val data = extras.keySet().mapNotNull { k -> extras.getString(k)?.let { k to it } }.toMap()
