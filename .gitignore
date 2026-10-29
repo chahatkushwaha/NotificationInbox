@@ -1,0 +1,8 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+build/
+.DS_Store
+# Add your own Firebase config locally (do not commit in real projects)
+# app/google-services.json
