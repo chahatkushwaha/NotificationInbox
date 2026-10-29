@@ -1,1 +1,0 @@
-Open the project in Android Studio; it will download Gradle 8.7 and generate the wrapper automatically.
